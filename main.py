@@ -8,6 +8,10 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
+import warnings
+
+# Suppress seaborn point placement warnings (many overlapping points)
+warnings.filterwarnings('ignore', category=UserWarning, message='.*cannot be placed.*')
 
 # Load data
 dataframe = pd.read_csv("jamb_exam_results.csv")
@@ -171,24 +175,32 @@ def plot_correlation_heatmap(df):
     plt.savefig("plots/correlation_heatmap.png", dpi=300, bbox_inches='tight')
     plt.close()
 
-
-# ============================================================================
-# 5. SCORE BY CATEGORICAL FACTORS
+# ============================================================================ 
+# 5. SCORE BY CATEGORICAL FACTORS - FIXED FOR SEABORN v0.14+
 # ============================================================================
 
 def plot_scores_by_school_type(df):
-    """
-    Compares JAMB scores between Public and Private schools.
-    Shows distribution differences and average performance.
-    """
     fig, ax = plt.subplots(figsize=(10, 6))
-    sns.violinplot(data=df, x="School_Type", y="JAMB_Score", 
-                   palette="muted", ax=ax)
-    sns.swarmplot(data=df, x="School_Type", y="JAMB_Score", 
-                  color='black', alpha=0.5, size=4, ax=ax)
-    
-    ax.set_title("JAMB Score Distribution by School Type", 
-                 fontsize=14, fontweight='bold')
+    sns.violinplot(
+        data=df, 
+        x="School_Type", 
+        y="JAMB_Score", 
+        hue="School_Type",
+        palette="muted", 
+        ax=ax,
+        legend=False
+    )
+    sns.swarmplot(
+        data=df, 
+        x="School_Type", 
+        y="JAMB_Score", 
+        color='black', 
+        alpha=0.3,  # Reduced from 0.5
+        size=2,     # Reduced from 4
+        ax=ax
+    )
+
+    ax.set_title("JAMB Score Distribution by School Type", fontsize=14, fontweight='bold')
     ax.set_xlabel("School Type", fontsize=12)
     ax.set_ylabel("JAMB Score", fontsize=12)
     
@@ -198,16 +210,17 @@ def plot_scores_by_school_type(df):
 
 
 def plot_scores_by_location_gender(df):
-    """
-    Analyzes JAMB scores by school location and student gender.
-    Shows performance patterns across urban/rural areas and gender.
-    """
     fig, ax = plt.subplots(figsize=(10, 6))
-    sns.boxplot(data=df, x="School_Location", y="JAMB_Score", 
-                hue="Gender", palette="husl", ax=ax)
-    
-    ax.set_title("JAMB Scores by School Location and Gender", 
-                 fontsize=14, fontweight='bold')
+    sns.boxplot(
+        data=df, 
+        x="School_Location", 
+        y="JAMB_Score", 
+        hue="Gender", 
+        palette="husl",
+        ax=ax
+    )
+
+    ax.set_title("JAMB Scores by School Location and Gender", fontsize=14, fontweight='bold')
     ax.set_xlabel("School Location", fontsize=12)
     ax.set_ylabel("JAMB Score", fontsize=12)
     
@@ -217,22 +230,26 @@ def plot_scores_by_location_gender(df):
 
 
 def plot_scores_by_socioeconomic(df):
-    """
-    Shows impact of socioeconomic status on exam performance.
-    """
     fig, ax = plt.subplots(figsize=(10, 6))
-    sns.barplot(data=df, x="Socioeconomic_Status", y="JAMB_Score", 
-                palette="viridis", ax=ax, errorbar='sd')
-    
-    ax.set_title("Average JAMB Score by Socioeconomic Status", 
-                 fontsize=14, fontweight='bold')
+    sns.barplot(
+        data=df, 
+        x="Socioeconomic_Status", 
+        y="JAMB_Score", 
+        hue="Socioeconomic_Status",
+        palette="viridis", 
+        ax=ax, 
+        errorbar='sd',
+        legend=False
+    )
+
+    ax.set_title("Average JAMB Score by Socioeconomic Status", fontsize=14, fontweight='bold')
     ax.set_xlabel("Socioeconomic Status", fontsize=12)
     ax.set_ylabel("Average JAMB Score", fontsize=12)
-    
+
     # Add value labels on bars
     for container in ax.containers:
         ax.bar_label(container, fmt='%.0f')
-    
+
     plt.tight_layout()
     plt.savefig("plots/scores_by_socioeconomic.png", dpi=300, bbox_inches='tight')
     plt.close()
@@ -286,8 +303,8 @@ def plot_teacher_quality_vs_score(df):
     fig, ax = plt.subplots(figsize=(10, 6))
     sns.boxplot(data=df, x="Teacher_Quality", y="JAMB_Score", 
                 palette="coolwarm", ax=ax)
-    sns.swarmplot(data=df, x="Teacher_Quality", y="JAMB_Score", 
-                  color='black', alpha=0.4, size=4, ax=ax)
+    sns.stripplot(data=df, x="Teacher_Quality", y="JAMB_Score", 
+                  color='black', alpha=0.2, size=3, ax=ax, jitter=True)
     
     ax.set_title("JAMB Score by Teacher Quality", 
                  fontsize=14, fontweight='bold')

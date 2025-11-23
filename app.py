@@ -113,6 +113,10 @@ def prepare_input_data(input_dict):
             le = models['label_encoders'][col]
             input_df[col] = le.transform(input_df[col])
     
+    # Reorder columns to match training data order
+    feature_names = models['metadata']['feature_names']
+    input_df = input_df[feature_names]
+    
     # Scale features
     input_scaled = models['scaler'].transform(input_df)
     

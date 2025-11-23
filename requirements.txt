@@ -10,7 +10,7 @@ numpy==2.1.2
 packaging==24.1
 pandas==2.2.3
 pathspec==0.12.1
-pillow==11.0.0
+pillow==10.4.0
 platformdirs==4.3.6
 pyparsing==3.2.0
 python-dateutil==2.9.0.post0
